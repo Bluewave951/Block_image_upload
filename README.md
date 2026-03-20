@@ -24,7 +24,7 @@ This project is an Odoo 6 ERP system with custom modules designed for enterprise
 
 1. **Clone the repository:**
 ```bash
-cd d:\Workshop_openerp-dev - 13-03-2026\odoo6+pg9
+git clone "https://github.com/Bluewave951/Block_image_upload.git"
 ```
 
 2. **Start the Docker containers:**
