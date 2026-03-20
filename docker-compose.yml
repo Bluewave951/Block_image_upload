@@ -1,21 +1,46 @@
-version: '3'
+version: '3.8'
 
 services:
+
+  db:
+    image: postgres:9.3
+    container_name: odoo6-db
+    restart: always
+    environment:
+      POSTGRES_USER: openerp
+      POSTGRES_PASSWORD: openerp
+      POSTGRES_DB: openerp
+    ports:
+      - "5433:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./backup:/backup
+      - ./initdb:/docker-entrypoint-initdb.d   # 👈 สำคัญ
+
   odoo:
     image: lcrea/odoo:6.1
+    container_name: odoo6-app
+    restart: always
+    depends_on:
+      - db
     ports:
       - "8069:8069"
     volumes:
       - ./addons:/mnt/extra-addons
     environment:
-      - DB_HOST=db
-      - DB_USER=openerp
-      - DB_PASSWORD=openerp
-    depends_on:
-      - db  # 👈 เพิ่มอันนี้
-  
-  db:
-    image: postgres:9.3
+      DB_HOST: db
+      DB_USER: openerp
+      DB_PASSWORD: openerp
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4
+    restart: always
+    ports:
+      - "5050:80"
     environment:
-      POSTGRES_USER: openerp
-      POSTGRES_PASSWORD: openerp
+      PGADMIN_DEFAULT_EMAIL: admin@test.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+
+volumes:
+  db_data:

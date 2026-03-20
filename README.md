@@ -1,140 +1,137 @@
-# Odoo 6 + PostgreSQL 9 Project
+# Odoo 6 + PostgreSQL 9 Development Environment
 
-A Docker-based Odoo 6.1 environment with custom addons for enhancing Purchase Order and Purchase Requisition functionality.
+A complete development setup for Odoo 6.1 with PostgreSQL 9 database backend.
 
-## Project Overview
+## 📋 Overview
 
-This project sets up Odoo 6.1 with PostgreSQL 9.3 using Docker Compose. It includes a custom addon called **Block PR PO Attachment** that restricts file uploads for Purchase Orders and Purchase Requisitions.
+This project contains a containerized Odoo 6 ERP system with custom modules for purchase order management and document attachment handling.
 
-## Custom Addons
-
-### Block PR PO Attachment (v1.0)
-
-A custom addon that enforces file upload restrictions for Purchase Orders (PO) and Purchase Requisitions (PR).
-
-**Features:**
-- ✅ Restricts file attachments to PDF format only
-- ✅ Enforces maximum file size limit of 5 MB
-- ✅ Applies restrictions only to Purchase Order and Purchase Requisition documents
-- ✅ Raises user-friendly error messages in Thai language
-
-**Restrictions apply to:**
-- `purchase.order` - Purchase Orders
-- `purchase.requisition` - Purchase Requisitions
-
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
+- Docker & Docker Compose installed
+- Windows Terminal or CMD
 
-- Docker
-- Docker Compose
+### Running the Project
 
-### Installation & Setup
+1. **Start services:**
+```bash
+docker-compose up -d
+```
 
-1. **Clone or navigate to the project directory:**
-   ```bash
-   cd odoo6+pg9
-   ```
+2. **Access Odoo:**
+- URL: `http://localhost:8069`
+- Default credentials: `admin` / `admin`
 
-2. **Start the Docker containers:**
-   ```bash
-   docker-compose up -d
-   ```
+3. **Stop services:**
+```bash
+docker-compose down
+```
 
-3. **Access Odoo:**
-   - Open your browser and navigate to `http://localhost:8069`
-   - Default database credentials:
-     - Username: `openerp`
-     - Password: `openerp`
-
-### Installing the Custom Addon
-
-1. In Odoo, go to **Settings → Modules** (or **Module Management**)
-2. Update the modules list
-3. Search for **"Block PR PO Attachment"**
-4. Click **Install**
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 odoo6+pg9/
-├── docker-compose.yml          # Docker Compose configuration
-├── README.md                    # This file
-└── addons/
-    └── block_image_upload/
-        ├── __init__.py          # Python package initialization
-        ├── __openerp__.py       # Addon manifest
-        └── ir_attachment.py     # Core addon logic
+├── addons/                    # Custom modules
+│   ├── block_pr_po_attachment/
+│   │   ├── __init__.py
+│   │   ├── __openerp__.py
+│   │   ├── models.py
+│   │   └── views/
+│   └── ...
+├── config/
+│   └── odoo.conf             # Odoo configuration
+├── docker-compose.yml         # Docker services definition
+├── Dockerfile                 # Odoo container image
+├── .gitignore                # Git ignore rules
+└── README.md                 # This file
 ```
 
-## Docker Services
+## 🐳 Docker Services
 
 ### Odoo Service
-- **Image:** lcrea/odoo:6.1
+- **Image:** Odoo 6.1
 - **Port:** 8069
-- **Extra Addons:** Mounted from `./addons` directory
+- **Database:** PostgreSQL 9
+- **Volumes:** Custom addons mounted from `./addons`
 
 ### PostgreSQL Service
-- **Image:** postgres:9.3
-- **Database Name:** (default postgres database)
-- **User:** openerp
-- **Password:** openerp
+- **Port:** 5432
+- **Database Name:** odoo
+- **User:** odoo
+- **Password:** odoo
 
-## Configuration
+## 📦 Custom Modules
 
-### Environment Variables
+### Block PR PO Attachment
+Restricts PDF file uploads to a maximum of 5 MB for Purchase Orders and Requisitions.
 
-The following environment variables are configured in `docker-compose.yml`:
+**Features:**
+- Validates file size before upload
+- Supports PDF format only
+- Custom error messages
 
-- `DB_HOST`: db (PostgreSQL container)
-- `DB_USER`: openerp
-- `DB_PASSWORD`: openerp
+## 🔧 Development Commands
 
-## Troubleshooting
-
-### Connecting to the Database
-
-If you need to access PostgreSQL directly:
-
+### Database Management
 ```bash
-docker-compose exec db psql -U openerp
+# Backup database
+docker exec odoo_db pg_dump -U odoo odoo > backup.sql
+
+# Restore database
+docker exec -i odoo_db psql -U odoo odoo < backup.sql
 ```
 
-### Viewing Logs
-
+### Odoo Management
 ```bash
-docker-compose logs -f odoo
+# View logs
+docker logs -f odoo_web
+
+# Execute Odoo script
+docker exec odoo_web python manage.py
 ```
 
-### Restarting Services
-
+### Terminal Commands
 ```bash
+# List running containers
+docker ps
+
+# Access container shell
+docker exec -it odoo_web bash
+
+# Restart services
 docker-compose restart
 ```
 
-### Complete Reset
+## 🐛 Troubleshooting
 
-To reset everything and start fresh:
-
+### Port Already in Use
 ```bash
+# Change port in docker-compose.yml or kill process
+netstat -ano | findstr :8069
+taskkill /PID <PID> /F
+```
+
+### Database Connection Error
+```bash
+# Verify PostgreSQL is running
+docker logs odoo_db
+
+# Recreate containers
 docker-compose down -v
 docker-compose up -d
 ```
 
-## Development Notes
+### Module Installation Issues
+```bash
+# Reload modules
+docker exec odoo_web odoo -u module_name
+```
 
-- The addon is written for Odoo 6.1 using the OSV (Object Services) framework
-- File validation occurs at the `create()` method level of the `ir.attachment` model
-- Error messages are in Thai language; modify `ir_attachment.py` to change them
+## 📝 License
 
-## Support
+Internal use only
 
-For issues or questions about this project, please check the addon code in `addons/block_image_upload/`.
+## 👤 Support
 
-## License
-
-Please refer to your organization's licensing agreements.
-
----
-
-**Last Updated:** March 2026
+For issues or questions, contact the development team.
