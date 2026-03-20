@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  odoo:
+    image: lcrea/odoo:6.1
+    ports:
+      - "8069:8069"
+    volumes:
+      - ./addons:/mnt/extra-addons
+    environment:
+      - DB_HOST=db
+      - DB_USER=openerp
+      - DB_PASSWORD=openerp
+    depends_on:
+      - db  # 👈 เพิ่มอันนี้
+  
+  db:
+    image: postgres:9.3
+    environment:
+      POSTGRES_USER: openerp
+      POSTGRES_PASSWORD: openerp
